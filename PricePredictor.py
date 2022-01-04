@@ -13,7 +13,7 @@ import PandasUtils
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 csv_file_path = "C:/Users/Jan/Zorro/Data/asynML2_trainData_EURUSD_L.csv"
-train_data_file_path = "resources/trainData"
+train_data_file_path = "resources/train_data/trainData"
 model_file_path = "resources/ml/pricePredict"
 
 
@@ -76,6 +76,7 @@ class Test:
         os.mkdir("resources")
         os.mkdir("resources/ml")
         os.mkdir("resources/result")
+        os.mkdir("resources/train_data")
     # units: int = 50
     # hidden_layer: int = 2
     epochs: int = 3
