@@ -12,7 +12,7 @@ from tensorflow.python.keras.models import Sequential
 import PandasUtils
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-csv_file_path = "C:/Users/Jan/Zorro/Data/asynML2_trainData_EURUSD_L.csv"
+csv_file_path = "resources/train_data/asynML2_trainData_EURUSD_L.csv"
 train_data_file_path = "resources/train_data/trainData"
 model_file_path = "resources/ml/pricePredict"
 
@@ -77,13 +77,17 @@ class Test:
         os.mkdir("resources/ml")
         os.mkdir("resources/result")
         os.mkdir("resources/train_data")
-    # units: int = 50
-    # hidden_layer: int = 2
-    epochs: int = 3
+    units_params: list = [100]
+    hidden_layer_params: list = [5]
+    epochs: int = 25
     x_train, y_train, x_test, y_test = get_labeled_data()
-    run_number = 3
-    for hidden_layer in range(4, 10, 2):
-        for units in range(100, 300, 100):
+    run_number = 4
+    for hidden_layer in hidden_layer_params:
+        for units in units_params:
+            print("build module with units: " + str(units) +
+                  " - hidden layers: " + str(hidden_layer) +
+                  " - epochs " + str(epochs)
+                  )
             predictor = build_model(
                 x_train,
                 y_train,

@@ -1,5 +1,5 @@
 0 - units: 50 - hidden layers: 2 - epochs 3 - result 2551
-0 - units: 50 - hidden layers: 2 - epochs 3 - result 2551
 1 - units: 100 - hidden layers: 2 - epochs 3 - result 2586
 2 - units: 150 - hidden layers: 2 - epochs 3 - result 2547
 3 - units: 100 - hidden layers: 4 - epochs 3 - result 2629
+4 - units: 100 - hidden layers: 5 - epochs 25 - result 4244
