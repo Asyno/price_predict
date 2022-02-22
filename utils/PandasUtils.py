@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from enum import Enum
 
 import numpy as np
 import pandas as pd
@@ -66,26 +67,58 @@ def get_fibonacci(target: int) -> list:
     return fibonacci
 
 
+class LabelType(Enum):
+    FIBONACCI = 1
+    FULL = 2
+    AUTO = 3
+
+
+def get_labels_fibonacci_type(data: pd.DataFrame, row_number: int, target: int, time_range: int):
+    features = []
+    for j in range(row_number - time_range, row_number, target):
+        data_range = data[j: j + target]
+        features.append(data_range.mean(axis=0))
+    if target >= 10:
+        fibonacci: list = get_fibonacci(target)
+        fibonacci.reverse()
+        for f in fibonacci:
+            features.append(data[row_number - target + f])
+    return features
+
+
+def get_labels_full_type(data: pd.DataFrame, row_number: int, time_range: int):
+    features = []
+    for row in range(row_number - time_range, row_number):
+        features.append(data[row])
+    return features
+
+
+def get_labels_auto_type(data: pd.DataFrame, row_number: int, target: int, time_range: int):
+    if target >= 30:
+        return get_labels_fibonacci_type(data, row_number, target, time_range)
+    else:
+        return get_labels_full_type(data, row_number, time_range)
+
+
 def get_time_range_labels_and_features(
         data: pd.DataFrame,
         time_range: int = 60,
-        target: int = 10
+        target: int = 10,
+        label_type: LabelType = LabelType.AUTO
 ) -> (np.ndarray, np.ndarray):
     x_train = []
     y_train = []
     for i in range(time_range, len(data)):
         if len(data) > i + target:
             # add all fields from the row as feature
-            features = []
-            for j in range(i - time_range, i, target):
-                data_range = data[j: j + target]
-                features.append(data_range.mean(axis=0))
-            if target >= 10:
-                fibonacci: list = get_fibonacci(target)
-                fibonacci.reverse()
-                for f in fibonacci:
-                    features.append(data[i - target + f])
-            x_train.append(features)
+            if label_type == LabelType.FIBONACCI:
+                x_train.append(get_labels_fibonacci_type(data, i, target, time_range))
+            elif label_type == LabelType.FULL:
+                x_train.append(get_labels_full_type(data, i, time_range))
+            elif label_type == LabelType.AUTO:
+                x_train.append(get_labels_auto_type(data, i, target, time_range))
+            else:
+                raise NotImplementedError
             # the last field should be the label
             # TODO: change label to mean from target before to target after
             y_train.append(data[i + target, data.shape[1] - 1])

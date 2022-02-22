@@ -11,12 +11,13 @@ from tensorflow.python.keras.layers import LSTM, Dropout, Dense
 from tensorflow.python.keras.models import Sequential
 
 from price_predict.utils import PandasUtils
+from price_predict.utils.PandasUtils import LabelType
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 csv_file_path = "resources/train_data/asynML2_trainData_EURUSD_L.csv"
 train_data_file_path = "resources/train_data/trainData"
 model_file_path = "resources/ml/pricePredict"
-feature_version: str = 'V4'
+label_version: str = 'V5'
 
 
 def create_resources_folder_if_not_exists():
@@ -94,12 +95,14 @@ def build_model(
 class Test:
     create_resources_folder_if_not_exists()
 
+    # TODO: create a config file for this parameter
     units_params: list = [50]
     hidden_layer_params: list = [5]
     epochs: int = 10
-    target_params: list = [10, 60, 1440]
+    target_params: list = [10, 30, 60]
     use_small_dataset: bool = True
     time_range_multiplier: int = 10
+    label_type: LabelType = LabelType.FULL
 
     for hidden_layer in hidden_layer_params:
         for units in units_params:
@@ -112,7 +115,8 @@ class Test:
                         " - epochs " + str(epochs) +
                         " - use small data: " + str(use_small_dataset) +
                         " - target: " + str(target) +
-                        " - feature version: " + feature_version
+                        " - label type: " + str(label_type.name) +
+                        " - label version: " + label_version
                 )
 
                 print("build module with run number: " + run_message)
