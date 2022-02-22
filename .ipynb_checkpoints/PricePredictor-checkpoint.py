@@ -9,8 +9,8 @@ from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.python.keras.layers import LSTM, Dropout, Dense
 from tensorflow.python.keras.models import Sequential
-import PandasUtils
 
+from price_predict.utils import PandasUtils
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 csv_file_path = "C:/Users/Jan/Zorro/Data/asynML2_trainData_EURUSD_L.csv"
@@ -32,7 +32,7 @@ def get_labeled_data() -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
 
     print("scale transform for the features")
     train_data: pd.DataFrame = data[:data.shape[0] / 0.8]
-    test_data: pd.DataFrame = data[data.shape[0] / 0.2:]
+    test_data = data[data.shape[0] / 0.2:]
     sc = MinMaxScaler(feature_range=(0, 1))
     train_data = sc.fit_transform(train_data)
     test_data = sc.fit(test_data)
@@ -54,7 +54,7 @@ def build_model(
         regressor = Sequential()
         regressor.add(LSTM(units=units, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
         regressor.add(Dropout(0.2))
-        for i in range(0, hidden_layer):
+        for _ in range(0, hidden_layer):
             regressor.add(LSTM(units=units, return_sequences=True))
             regressor.add(Dropout(0.2))
         regressor.add(LSTM(units=units))

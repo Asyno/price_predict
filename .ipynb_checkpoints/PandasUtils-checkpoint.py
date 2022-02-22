@@ -1,8 +1,8 @@
 import os
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
-from datetime import datetime
 
 CSV_PATH = 'C:/Users/Jan/Zorro/Data/asynEx_EURUSD_L.csv'
 
