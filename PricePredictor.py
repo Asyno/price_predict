@@ -40,19 +40,22 @@ def get_labeled_data(
             data = data[int(data.shape[0] * 0.5):]
         print("transform timestamp to sin/cos")
         data = PandasUtils.transform_timestamp(data)
+        # TODO: should add information about the settings to the file name
         pickle.dump(data, open(train_data_file_path, 'wb'))
     else:
         print("load train data")
         data = pickle.load(open(train_data_file_path, 'rb'))
 
-    print("scale transform for the features")
+    print("split train and test data")
     train_data: pd.DataFrame = data[:int(data.shape[0] * 0.8)]
     test_data: pd.DataFrame = data[int(data.shape[0] * 0.8):]
+
+    print("scale transform for the features")
     sc = MinMaxScaler(feature_range=(0, 1))
     train_data = sc.fit_transform(train_data)
     test_data = sc.transform(test_data)
 
-    print("create train and test set")
+    print("create features and labels for train and test set")
     x_train, y_train = PandasUtils.get_time_range_labels_and_features(train_data, target=target, time_range=time_range)
     x_test, y_test = PandasUtils.get_time_range_labels_and_features(test_data, target=target, time_range=time_range)
     return x_train, y_train, x_test, y_test
@@ -133,8 +136,8 @@ class Test:
                 print("start test prediction")
                 test_predict = predictor.predict(x_test)
                 # plot result
-                plt.plot(y_test[1000:3000], color='red', label='Real Stock Price')
-                plt.plot(test_predict[1000 - target:3000 - target], color='blue', label='Predicted Stock Price')
+                plt.plot(y_test[1000 + target:3000 + target], color='red', label='Real Stock Price')
+                plt.plot(test_predict[1000:3000], color='blue', label='Predicted Stock Price')
                 plt.title('Stock Price Prediction')
                 plt.xlabel('Time')
                 plt.ylabel('Stock Price')
