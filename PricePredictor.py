@@ -1,5 +1,6 @@
 import os
 import pickle
+import time
 from os import path
 
 import numpy as np
@@ -32,7 +33,8 @@ def get_labeled_data(
         use_existing: bool = True,
         use_small_dataset: bool = False,
         time_range: int = 60,
-        target: int = 10
+        target: int = 10,
+        label_type: LabelType = LabelType.AUTO
 ) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
     if not use_existing or not path.exists(train_data_file_path):
         print("prepare training data")
@@ -57,8 +59,18 @@ def get_labeled_data(
     test_data = sc.transform(test_data)
 
     print("create features and labels for train and test set")
-    x_train, y_train = PandasUtils.get_time_range_labels_and_features(train_data, target=target, time_range=time_range)
-    x_test, y_test = PandasUtils.get_time_range_labels_and_features(test_data, target=target, time_range=time_range)
+    x_train, y_train = PandasUtils.get_time_range_labels_and_features(
+        train_data,
+        target=target,
+        time_range=time_range,
+        label_type=label_type
+    )
+    x_test, y_test = PandasUtils.get_time_range_labels_and_features(
+        test_data,
+        target=target,
+        time_range=time_range,
+        label_type=label_type
+    )
     return x_train, y_train, x_test, y_test
 
 
@@ -125,9 +137,11 @@ class Test:
                     use_existing=False,
                     use_small_dataset=use_small_dataset,
                     time_range=target * time_range_multiplier,
-                    target=target
+                    target=target,
+                    label_type=label_type
                 )
 
+                module_build_start_time: float = time.time()
                 predictor = build_model(
                     x_train,
                     y_train,
@@ -136,6 +150,7 @@ class Test:
                     epochs=epochs,
                     run_number=run_number
                 )
+                module_build_end_time: float = time.time()
 
                 print("start test prediction")
                 test_predict = predictor.predict(x_test)
@@ -155,6 +170,8 @@ class Test:
                         result += 1
 
                 result_message: str = run_message + " - result " + str(result)
+                build_time: float = module_build_end_time - module_build_start_time
+                result_message += " - module train time in min: " + str(build_time / 60)
                 result_file = open("resources/result/result.txt", "a")
                 result_file.write(result_message + "\n")
                 result_file.close()
