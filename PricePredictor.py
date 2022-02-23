@@ -155,8 +155,9 @@ class Test:
                 print("start test prediction")
                 test_predict = predictor.predict(x_test)
                 # plot result
-                plt.plot(y_test[1000 + target:3000 + target], color='red', label='Real Stock Price')
-                plt.plot(test_predict[1000:3000], color='blue', label='Predicted Stock Price')
+                plt.plot(x_test[1000 + target:3000 + target, x_test.shape[1] - 1], color='black', label='Real Price')
+                plt.plot(y_test[1000 + target:3000 + target], color='red', label='target Price')
+                plt.plot(test_predict[1000:3000], color='blue', label='Predicted Price')
                 plt.title('Stock Price Prediction')
                 plt.xlabel('Time')
                 plt.ylabel('Stock Price')

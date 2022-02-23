@@ -76,7 +76,7 @@ class LabelType(Enum):
 def get_labels_fibonacci_type(data: pd.DataFrame, row_number: int, target: int, time_range: int):
     features = []
     for j in range(row_number - time_range, row_number, target):
-        data_range = data[j: j + target]
+        data_range: pd.DataFrame = data[j: j + target]
         features.append(data_range.mean(axis=0))
     if target >= 10:
         fibonacci: list = get_fibonacci(target)
@@ -120,6 +120,7 @@ def get_time_range_labels_and_features(
             else:
                 raise NotImplementedError
             # the last field should be the label
-            # TODO: change label to mean from target before to target after
-            y_train.append(data[i + target, data.shape[1] - 1])
+            # get the mean from the range 'i' to i + target (the target value) + target
+            data_range: pd.DataFrame = data[i: i + target + target, data.shape[1] - 1]
+            y_train.append(data_range.mean(axis=0))
     return np.array(x_train), np.array(y_train)
