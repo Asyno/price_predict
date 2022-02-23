@@ -1,3 +1,4 @@
+import datetime
 import os
 import pickle
 import time
@@ -171,8 +172,8 @@ class Test:
                         result += 1
 
                 result_message: str = run_message + " - result " + str(result)
-                build_time: float = module_build_end_time - module_build_start_time
-                result_message += " - module train time in min: " + str(build_time / 60)
+                build_time_sec: float = module_build_end_time - module_build_start_time
+                result_message += " - module train time: " + str(datetime.timedelta(seconds=build_time_sec))
                 result_file = open("resources/result/result.txt", "a")
                 result_file.write(result_message + "\n")
                 result_file.close()
