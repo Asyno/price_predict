@@ -1,15 +1,17 @@
 import os
 from datetime import datetime
 from enum import Enum
+from typing import List
 
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
 CSV_PATH = 'C:/Users/Jan/Zorro/Data/asynEx_EURUSD_L.csv'
 
 
 def get_data_from_csv(path: str = CSV_PATH, ignore_rows: int = 50) -> pd.DataFrame:
-    csv_path = os.path.join(path)
+    csv_path: str = os.path.join(path)
     data = pd.read_csv(csv_path)
     data = data[ignore_rows:]
     data = data.drop_duplicates()
@@ -22,20 +24,20 @@ def get_column(data: pd.DataFrame, column_number: int) -> pd.DataFrame:
 
 
 def remove_column(data: pd.DataFrame, column_number: int) -> pd.DataFrame:
-    column_size = data.shape[1]
-    column_numbers = [x for x in range(column_size)]  # list of columns' integer indices
+    column_size: int = data.shape[1]
+    column_numbers: List[int] = [x for x in range(column_size)]  # list of columns' integer indices
     column_numbers.remove(column_number)
-    data = data.iloc[:, column_numbers]
+    data: pd.DataFrame = data.iloc[:, column_numbers]
     return data
 
 
 def transform_timestamp(data: pd.DataFrame, index: int = 0) -> pd.DataFrame:
     time_column = get_column(data, index)
     data = remove_column(data, index)
-    dates_sin_month = []
-    dates_cos_month = []
-    dates_sin_year = []
-    dates_cos_year = []
+    dates_sin_month: List[int] = []
+    dates_cos_month: List[int] = []
+    dates_sin_year: List[int] = []
+    dates_cos_year: List[int] = []
     for row in range(0, len(data)):
         dates_sin_month.append(get_time_as_sin(time_column.iloc[row], 60 * 24 * 30))
         dates_cos_month.append(get_time_as_cos(time_column.iloc[row], 60 * 24 * 30))
@@ -124,3 +126,42 @@ def get_time_range_labels_and_features(
             data_range: pd.DataFrame = data[i: i + target + target, data.shape[1] - 1]
             y_train.append(data_range.mean(axis=0))
     return np.array(x_train), np.array(y_train)
+
+
+def get_labeled_data(
+        csv_file_path: str,
+        use_small_dataset: bool = False,
+        time_range: int = 60,
+        target: int = 10,
+        label_type: LabelType = LabelType.AUTO
+) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
+    print("prepare training data")
+    data: pd.DataFrame = get_data_from_csv(csv_file_path, ignore_rows=100)
+    if use_small_dataset:
+        data = data[int(data.shape[0] * 0.5):]
+    print("transform timestamp to sin/cos")
+    data = transform_timestamp(data)
+
+    print("split train and test data")
+    train_data: pd.DataFrame = data[:int(data.shape[0] * 0.8)]
+    test_data: pd.DataFrame = data[int(data.shape[0] * 0.8):]
+
+    print("scale transform for the features")
+    sc = MinMaxScaler(feature_range=(0, 1))
+    train_data = sc.fit_transform(train_data)
+    test_data = sc.transform(test_data)
+
+    print("create features and labels for train and test set")
+    x_train, y_train = get_time_range_labels_and_features(
+        train_data,
+        target=target,
+        time_range=time_range,
+        label_type=label_type
+    )
+    x_test, y_test = get_time_range_labels_and_features(
+        test_data,
+        target=target,
+        time_range=time_range,
+        label_type=label_type
+    )
+    return x_train, y_train, x_test, y_test

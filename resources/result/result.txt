@@ -1,3 +1,7 @@
 0 - units: 50 - hidden layers: 5 - epochs 10 - use small data: True - target: 10 - result 54575
 1 - units: 50 - hidden layers: 5 - epochs 10 - use small data: True - target: 60 - result 54995
 2 - units: 50 - hidden layers: 5 - epochs 10 - use small data: True - target: 1440 - result 47257
+6 - units: 50 - hidden layers: 5 - epochs 10 - use small data: True - target: 10 - label type: FULL - label version: V5 - result 55280 - module train time: 15:41:27.596524
+8 - units: 50 - hidden layers: 5 - epochs 10 - use small data: True - target: 10 - label type: FIBONACCI - label version: V5 - result 54088 - module train time: 2:16:22.547863
+9 - units: 50 - hidden layers: 5 - epochs 10 - use small data: True - target: 30 - label type: FIBONACCI - label version: V5 - result 54780 - module train time: 2:35:15.836764
+10 - units: 50 - hidden layers: 5 - epochs 10 - use small data: True - target: 60 - label type: FIBONACCI - label version: V5 - result 54492 - module train time: 2:50:29.052390
