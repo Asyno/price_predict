@@ -34,20 +34,20 @@ def remove_column(data: pd.DataFrame, column_number: int) -> pd.DataFrame:
 def transform_timestamp(data: pd.DataFrame, index: int = 0) -> pd.DataFrame:
     time_column = get_column(data, index)
     data = remove_column(data, index)
-    data.insert(0, 0, time_column, True)
-    data.insert(0, 1, time_column, True)
-    data.insert(0, 2, time_column, True)
-    data.insert(0, 3, time_column, True)
-    data.apply(lambda x: transform_timestamp_per_row(x), axis=1)
+    dates_sin_month: List[int] = []
+    dates_cos_month: List[int] = []
+    dates_sin_year: List[int] = []
+    dates_cos_year: List[int] = []
+    for row in range(0, len(data)):
+        dates_sin_month.append(get_time_as_sin(time_column.iloc[row], 60 * 24 * 30))
+        dates_cos_month.append(get_time_as_cos(time_column.iloc[row], 60 * 24 * 30))
+        dates_sin_year.append(get_time_as_sin(time_column.iloc[row], 60 * 24 * 365))
+        dates_cos_year.append(get_time_as_cos(time_column.iloc[row], 60 * 24 * 365))
+    data.insert(0, 0, dates_sin_month, True)
+    data.insert(0, 1, dates_cos_month, True)
+    data.insert(0, 2, dates_sin_year, True)
+    data.insert(0, 3, dates_cos_year, True)
     return data
-
-
-def transform_timestamp_per_row(row: pd.Series) -> pd.Series:
-    row[0] = get_time_as_sin(row[0], 60 * 24 * 30)
-    row[1] = get_time_as_cos(row[1], 60 * 24 * 30)
-    row[2] = get_time_as_sin(row[2], 60 * 24 * 365)
-    row[3] = get_time_as_cos(row[3], 60 * 24 * 365)
-    return row
 
 
 def get_time_as_sin(date_string: str, time_frame: int) -> int:
