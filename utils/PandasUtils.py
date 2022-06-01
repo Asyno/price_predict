@@ -75,7 +75,7 @@ class LabelType(Enum):
     AUTO = 3
 
 
-def get_labels_fibonacci_type(data: pd.DataFrame, row_number: int, target: int, time_range: int):
+def get_labels_fibonacci_type(data: pd.DataFrame, row_number: int, target: int, time_range: int) -> list:
     features = []
     for j in range(row_number - time_range, row_number, target):
         data_range: pd.DataFrame = data[j: j + target]
@@ -88,7 +88,7 @@ def get_labels_fibonacci_type(data: pd.DataFrame, row_number: int, target: int, 
     return features
 
 
-def get_labels_full_type(data: pd.DataFrame, row_number: int, time_range: int):
+def get_labels_full_type(data: pd.DataFrame, row_number: int, time_range: int) -> list:
     features = []
     for row in range(row_number - time_range, row_number):
         features.append(data[row])
